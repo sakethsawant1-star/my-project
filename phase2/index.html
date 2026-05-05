@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Zomato AI - Concierge</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b7122a",
+                        "on-surface": "#1b1c1c",
+                        "surface": "#fbf9f8",
+                        "secondary": "#5d5f5f",
+                        "outline-variant": "#e4bebc",
+                        "surface-container": "#efeded",
+                        "on-surface-variant": "#5b403f",
+                        "primary-fixed": "#ffdad8",
+                    },
+                    fontFamily: {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-bold": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "title-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .glass-panel, .glass-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+        }
+        .glow-text {
+            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #b7122a; /* primary */
+            opacity: 0;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .pulse-ring:nth-child(2) { animation-delay: 0.5s; }
+        .pulse-ring:nth-child(3) { animation-delay: 1s; }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #b7122a;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 12px;
+        }
+        
+        .bg-blurred-food {
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDF9MlJ2NpP-MFVwoGPcBPrtjGCJt4mN1DGZzirB5S1Z3uNMxIHsMfQGJtMvxhgfbuqIrr3vO8yweakBu-HOSAFjU5LARy_K113lIoUj7aS4oAvijxTkRERm_Y4VeQ0O3RYUWS2Aq0d3EsfXvbzMcoL51iRA3WZSywwQUpY7JLH9xsjNdQugrkSDdOzJX6_kab6ZVcsfwk3lPsWgS5AdFNllDCpiMkFXUcWSiW-z0nkvfK2SHqsdj4dmU8hkFP9Z9IVwUhKfhgO6MH-');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .bg-blurred-food::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(251, 249, 248, 0.6);
+            backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface min-h-screen font-body-md overflow-x-hidden relative flex flex-col">
+
+    <!-- Global Background for Landing & Results -->
+    <div id="global-bg" class="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&amp;w=2070&amp;auto=format&amp;fit=crop')] bg-cover bg-center opacity-100"></div>
+        <div class="absolute inset-0 bg-black/40"></div>
+    </div>
+
+    <!-- Global Header -->
+    <header class="fixed top-0 w-full z-50 flex justify-between items-center h-20 px-8 md:px-16 max-w-full bg-black/20 backdrop-blur-md border-b border-white/10 shadow-sm text-white transition-colors duration-500" id="global-header">
+        <div class="text-3xl font-black italic tracking-tighter text-white font-['Plus_Jakarta_Sans'] uppercase cursor-pointer" onclick="location.reload()">
+            ZOMATO <span class="text-[#E23744]">AI</span>
+        </div>
+        <div class="hidden md:flex items-center gap-8 font-title-sm">
+            <a class="hover:text-primary-fixed transition-colors" href="#">How it Works</a>
+            <a class="hover:text-primary-fixed transition-colors" href="#">About</a>
+        </div>
+    </header>
+
+
+    <!-- VIEW 1: LANDING PAGE -->
+    <main id="view-landing" class="pt-32 pb-24 px-4 md:px-8 max-w-[1000px] mx-auto flex flex-col gap-12 relative z-10 min-h-screen items-center justify-center transition-opacity duration-500">
+        
+        <section class="text-center space-y-4 py-8">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white glow-text tracking-tight font-['Plus_Jakarta_Sans']">
+                Discover Dining, <span class="text-[#E23744]">Reimagined.</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 drop-shadow-md font-medium max-w-2xl mx-auto">
+                Your personal culinary concierge. Tell us what you're craving, and we'll find the perfect spot.
+            </p>
+        </section>
+
+        <form id="recommendation-form" class="glass-panel rounded-3xl p-8 md:p-12 w-full flex flex-col gap-8 relative overflow-hidden">
+            <!-- Vibe Feature -->
+            <div class="space-y-2 relative z-10 w-full">
+                <label class="font-bold text-xs text-gray-700 flex items-center gap-1 uppercase tracking-wider mb-2">
+                    <span class="material-symbols-outlined text-[16px] text-[#b7122a]">auto_awesome</span>
+                    DESCRIBE YOUR VIBE
+                </label>
+                <textarea id="nuance" class="w-full bg-white border-2 border-[#e4bebc] rounded-2xl p-6 text-xl md:text-2xl font-medium text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-[#b7122a] focus:ring-4 focus:ring-[#b7122a]/10 transition-all resize-none shadow-sm h-32" placeholder="e.g., A quiet romantic place for an anniversary dinner with great wine..."></textarea>
+            </div>
+
+            <!-- Context Inputs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10 w-full">
+                
+                <!-- Location -->
+                <div class="space-y-2">
+                    <label class="font-bold text-xs text-gray-700 uppercase tracking-wider">LOCATION</label>
+                    <div class="relative flex items-center bg-white border border-[#e4bebc] rounded-xl px-4 py-3 focus-within:border-[#b7122a] transition-colors shadow-sm h-14">
+                        <span class="material-symbols-outlined text-[#b7122a] mr-2 text-xl">location_on</span>
+                        <select id="location" required class="bg-transparent border-none focus:ring-0 text-gray-800 w-full p-0 appearance-none outline-none">
+                            <option value="" disabled selected>Select a location...</option>
+                            <option value="BTM">BTM</option>
+                            <option value="Banashankari">Banashankari</option>
+                            <option value="Bannerghatta Road">Bannerghatta Road</option>
+                            <option value="Basavanagudi">Basavanagudi</option>
+                            <option value="Bellandur">Bellandur</option>
+                            <option value="Bommanahalli">Bommanahalli</option>
+                            <option value="Brigade Road">Brigade Road</option>
+                            <option value="Brookefield">Brookefield</option>
+                            <option value="CV Raman Nagar">CV Raman Nagar</option>
+                            <option value="Central Bangalore">Central Bangalore</option>
+                            <option value="Church Street">Church Street</option>
+                            <option value="City Market">City Market</option>
+                            <option value="Commercial Street">Commercial Street</option>
+                            <option value="Cunningham Road">Cunningham Road</option>
+                            <option value="Domlur">Domlur</option>
+                            <option value="East Bangalore">East Bangalore</option>
+                            <option value="Ejipura">Ejipura</option>
+                            <option value="Electronic City">Electronic City</option>
+                            <option value="Frazer Town">Frazer Town</option>
+                            <option value="HBR Layout">HBR Layout</option>
+                            <option value="HSR">HSR</option>
+                            <option value="Hosur Road">Hosur Road</option>
+                            <option value="ITPL Main Road, Whitefield">ITPL Main Road, Whitefield</option>
+                            <option value="Indiranagar">Indiranagar</option>
+                            <option value="Infantry Road">Infantry Road</option>
+                            <option value="JP Nagar">JP Nagar</option>
+                            <option value="Jalahalli">Jalahalli</option>
+                            <option value="Jayanagar">Jayanagar</option>
+                            <option value="Jeevan Bhima Nagar">Jeevan Bhima Nagar</option>
+                            <option value="KR Puram">KR Puram</option>
+                            <option value="Kammanahalli">Kammanahalli</option>
+                            <option value="Kanakapura Road">Kanakapura Road</option>
+                            <option value="Koramangala">Koramangala</option>
+                            <option value="Kumaraswamy Layout">Kumaraswamy Layout</option>
+                            <option value="Langford Town">Langford Town</option>
+                            <option value="Lavelle Road">Lavelle Road</option>
+                            <option value="MG Road">MG Road</option>
+                            <option value="Majestic">Majestic</option>
+                            <option value="Malleshwaram">Malleshwaram</option>
+                            <option value="Marathahalli">Marathahalli</option>
+                            <option value="Mysore Road">Mysore Road</option>
+                            <option value="Nagarbhavi">Nagarbhavi</option>
+                            <option value="Old Airport Road">Old Airport Road</option>
+                            <option value="Old Madras Road">Old Madras Road</option>
+                            <option value="RT Nagar">RT Nagar</option>
+                            <option value="Race Course Road">Race Course Road</option>
+                            <option value="Rajajinagar">Rajajinagar</option>
+                            <option value="Rajarajeshwari Nagar">Rajarajeshwari Nagar</option>
+                            <option value="Residency Road">Residency Road</option>
+                            <option value="Richmond Road">Richmond Road</option>
+                            <option value="Sanjay Nagar">Sanjay Nagar</option>
+                            <option value="Sarjapur Road">Sarjapur Road</option>
+                            <option value="Seshadripuram">Seshadripuram</option>
+                            <option value="Shanti Nagar">Shanti Nagar</option>
+                            <option value="Shivajinagar">Shivajinagar</option>
+                            <option value="South Bangalore">South Bangalore</option>
+                            <option value="St. Marks Road">St. Marks Road</option>
+                            <option value="Ulsoor">Ulsoor</option>
+                            <option value="Uttarahalli">Uttarahalli</option>
+                            <option value="Vasanth Nagar">Vasanth Nagar</option>
+                            <option value="Vijay Nagar">Vijay Nagar</option>
+                            <option value="Whitefield">Whitefield</option>
+                            <option value="Wilson Garden">Wilson Garden</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Budget -->
+                <div class="space-y-2">
+                    <label class="font-bold text-xs text-gray-700 uppercase tracking-wider">BUDGET</label>
+                    <div class="relative flex items-center bg-white border border-[#e4bebc] rounded-xl px-4 py-3 focus-within:border-[#b7122a] transition-colors shadow-sm h-14">
+                        <span class="material-symbols-outlined text-[#b7122a] mr-2 text-xl">payments</span>
+                        <select id="budget" required class="bg-transparent border-none focus:ring-0 text-gray-800 w-full p-0 appearance-none outline-none">
+                            <option value="" disabled selected>Select budget...</option>
+                            <option value="low">Under ₹500</option>
+                            <option value="medium">₹500 - ₹1500</option>
+                            <option value="high">Above ₹1500</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Cuisine -->
+                <div class="space-y-2">
+                    <label class="font-bold text-xs text-gray-700 uppercase tracking-wider">CUISINE</label>
+                    <div class="relative flex items-center bg-white border border-[#e4bebc] rounded-xl px-4 py-3 focus-within:border-[#b7122a] transition-colors shadow-sm h-14">
+                        <span class="material-symbols-outlined text-[#b7122a] mr-2 text-xl">restaurant</span>
+                        <input id="cuisine" type="text" placeholder="e.g. Italian, Sushi" class="bg-transparent border-none focus:ring-0 text-gray-800 w-full p-0 outline-none"/>
+                    </div>
+                </div>
+
+                <!-- Rating -->
+                <div class="space-y-2">
+                    <label class="font-bold text-xs text-gray-700 uppercase tracking-wider">RATING</label>
+                    <div class="relative flex items-center bg-white border border-[#e4bebc] rounded-xl px-4 py-3 focus-within:border-[#b7122a] transition-colors shadow-sm h-14">
+                        <span class="material-symbols-outlined text-[#b7122a] mr-2 text-xl">star</span>
+                        <select id="rating" class="bg-transparent border-none focus:ring-0 text-gray-800 w-full p-0 appearance-none outline-none">
+                            <option value="Any" selected>Any Rating</option>
+                            <option value="3.5+">3.5 & Above</option>
+                            <option value="4.0+">4.0 & Above</option>
+                            <option value="4.5+">4.5 & Above</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CTA -->
+            <div class="pt-4 relative z-10 w-full flex justify-end">
+                <button type="submit" class="bg-[#E23744] hover:bg-[#C9303D] text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    <span class="relative z-10">Find Recommendations</span>
+                    <span class="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform text-2xl">arrow_forward</span>
+                </button>
+            </div>
+        </form>
+    </main>
+
+
+    <!-- VIEW 2: LOADING / PROCESSING -->
+    <main id="view-loading" class="hidden flex-grow flex items-center justify-center relative bg-blurred-food overflow-hidden p-4 min-h-screen">
+        <div class="relative z-10 w-full max-w-lg mx-auto">
+            <div class="glass-card rounded-[24px] p-8 md:p-12 flex flex-col items-center text-center">
+                <!-- AI Orb -->
+                <div class="relative w-32 h-32 mb-8">
+                    <div class="pulse-ring"></div>
+                    <div class="pulse-ring"></div>
+                    <div class="pulse-ring"></div>
+                    <div class="absolute inset-0 bg-[#ffdad8] rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(183,18,42,0.3)] z-10">
+                        <span class="material-symbols-outlined text-[#b7122a] text-[48px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                    </div>
+                </div>
+                <!-- Text -->
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Curating your experience</h1>
+                <p class="text-gray-600 mb-10">Our AI is handpicking the best options based on your unique tastes.</p>
+                <!-- Status List -->
+                <div class="w-full space-y-6 text-left max-w-xs mx-auto">
+                    <div class="flex items-center">
+                        <div class="status-dot animate-pulse"></div>
+                        <span class="font-semibold text-[#b7122a] text-lg">Consulting the LLM...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- VIEW 3: TOP RECOMMENDATIONS -->
+    <main id="view-results" class="hidden flex-grow max-w-7xl mx-auto px-4 md:px-8 py-24 w-full min-h-screen relative z-10">
+        <div class="mb-12 text-center md:text-left pt-8">
+            <p class="font-bold text-xs text-[#b7122a] mb-2 uppercase tracking-wider">AI Curated Picks</p>
+            <h1 class="text-4xl font-extrabold text-white mb-4 drop-shadow-md">Your Top Recommendations</h1>
+            <p class="text-lg text-white/90 max-w-2xl drop-shadow-sm">We've analyzed ambiance, reviews, and menu offerings to find the perfect spots for you.</p>
+        </div>
+        
+        <!-- Grid for cards -->
+        <div id="results-grid" class="grid grid-cols-1 md:grid-cols-12 gap-6 pb-12">
+            <!-- Cards will be injected here via JavaScript -->
+        </div>
+
+        <div class="flex justify-center mt-8">
+            <button onclick="location.reload()" class="bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/40 text-white px-8 py-3 rounded-full font-semibold transition-all">
+                Search Again
+            </button>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

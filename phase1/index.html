@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zomato AI Engine - Phase 1 Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            background: #e1f5fe;
+            border: 1px solid #b3e5fc;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        pre {
+            background: #2b2b2b;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        h1 { color: #cb202d; } /* Zomato Red */
+    </style>
+</head>
+<body>
+
+    <h1>Phase 1: Data Ingestion Test</h1>
+    <div id="status" class="status">Initializing Data Ingestion Engine...</div>
+    <div id="data-preview"></div>
+
+    <!-- Import Phase 1 Engine -->
+    <script src="dataset.js"></script>
+    <script>
+        async function runPhase1Test() {
+            const statusEl = document.getElementById('status');
+            const previewEl = document.getElementById('data-preview');
+            
+            statusEl.innerText = 'Fetching dataset from Hugging Face...';
+            
+            const engine = new DataIngestionEngine();
+            const data = await engine.fetchDataset();
+            
+            if (data.length > 0) {
+                statusEl.style.backgroundColor = '#e8f5e9';
+                statusEl.style.borderColor = '#c8e6c9';
+                statusEl.style.color = '#2e7d32';
+                statusEl.innerText = `Success! Ingested, cleaned, and indexed ${data.length} restaurants.`;
+                
+                // Show top 3 results as proof of transformation
+                const previewHtml = data.slice(0, 3).map(r => `
+                    <h3>${r.name} (${r.rating} ⭐)</h3>
+                    <p><strong>Location:</strong> ${r.location}</p>
+                    <p><strong>Cuisines:</strong> ${r.cuisines.join(', ')}</p>
+                    <p><strong>Cost for Two:</strong> ₹${r.costForTwo}</p>
+                    <hr/>
+                `).join('');
+                
+                previewEl.innerHTML = `<h2>Top 3 Indexed Results:</h2>${previewHtml}`;
+            } else {
+                statusEl.style.backgroundColor = '#ffebee';
+                statusEl.style.borderColor = '#ffcdd2';
+                statusEl.style.color = '#c62828';
+                statusEl.innerText = 'Error: Failed to load dataset.';
+            }
+        }
+
+        // Run test on load
+        window.addEventListener('DOMContentLoaded', runPhase1Test);
+    </script>
+</body>
+</html>
