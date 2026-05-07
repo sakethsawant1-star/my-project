@@ -31,12 +31,14 @@ flowchart TD
 
     %% Output & Phase 5 Deployment
     J --> L[/Final User Display<br>Phase 2 UI/]
-    L -.-> S{{Phase 5: Streamlit Deployment}}
+    L -.-> V{{Phase 5: Vercel Frontend}}
+    HTTP -.-> R{{Phase 5: Render Backend}}
     
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style I fill:#bbf,stroke:#333,stroke-width:4px
     style L fill:#bfb,stroke:#333,stroke-width:2px
-    style S fill:#ff9,stroke:#333,stroke-width:2px
+    style V fill:#ff9,stroke:#333,stroke-width:2px
+    style R fill:#ff9,stroke:#333,stroke-width:2px
 ```
 
 ## Technology Stack
@@ -71,8 +73,8 @@ The LLM acts as the final decision-maker.
   - **Rationale:** A concise, human-readable explanation for *why* each restaurant was chosen.
 - **Delivery:** The Flask server (`backend/server.py`) returns this JSON response back to the Phase 2 frontend for display.
 
-### Phase 5: Deployment (`frontend/streamlit/`)
-The final phase involves taking the entire application stack and deploying it to the cloud for public access using Streamlit.
-- **Goal:** To create a monolithic Python application (combining frontend and backend logic) that is natively supported by Streamlit Community Cloud.
-- **Integration:** The backend filtering and Groq LLM API calls are imported directly into the Streamlit script, replacing the need for a separate Flask API and HTML frontend.
-- **Hosting:** Deployed to Streamlit Cloud for easy, serverless hosting and sharing.
+### Phase 5: Deployment (Vercel & Render)
+The final phase involves deploying the decoupled architecture to the cloud.
+- **Backend (Render):** The Python Flask server (`backend/server.py`) and data processing logic are deployed as a Web Service on Render. Gunicorn is used as the production WSGI server.
+- **Frontend (Vercel):** The UI (`phase2/` or Next.js app) is deployed as a static site or serverless app on Vercel.
+- **Integration:** The frontend's JavaScript will be updated to point to the live Render backend URL instead of `localhost`.
