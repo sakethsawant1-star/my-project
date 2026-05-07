@@ -16,6 +16,11 @@ st.set_page_config(page_title="Zomato AI Concierge", page_icon="🍔", layout="c
 
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+    
+    html, body, [class*="css"]  {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
     .stApp {
         background-color: #fbf9f8;
         color: #1b1c1c;
@@ -33,19 +38,31 @@ st.markdown("""
     }
     .recommendation-card {
         background-color: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        margin-bottom: 20px;
-        border-left: 4px solid #b7122a;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-bottom: 24px;
+        border-left: 6px solid #b7122a;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .recommendation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    }
+    .recommendation-card h2 {
+        font-weight: 800;
+        color: #1b1c1c;
+        margin-top: 5px;
+        margin-bottom: 15px;
     }
     .rationale {
         background-color: #f5f3f3;
-        padding: 15px;
-        border-radius: 8px;
+        padding: 16px;
+        border-radius: 12px;
         font-style: italic;
         color: #5d5f5f;
-        margin-top: 10px;
+        margin-top: 15px;
+        border: 1px solid #e4e2e2;
     }
     </style>
 """, unsafe_allow_html=True)
