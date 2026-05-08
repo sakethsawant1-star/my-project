@@ -1,0 +1,7 @@
+backend/
+phase1/
+frontend/
+docs/
+requirements.txt
+Procfile
+*.py

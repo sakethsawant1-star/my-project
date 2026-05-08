@@ -1,6 +1,9 @@
 {
   "version": 2,
+  "framework": null,
+  "buildCommand": null,
+  "outputDirectory": "phase2",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/phase2/$1" }
+    { "source": "/(.*)", "destination": "/$1" }
   ]
 }
