@@ -31,11 +31,13 @@ def recommend():
 def debug_env():
     import sys
     key = os.environ.get("GROQ_API_KEY", "")
+    all_keys = list(os.environ.keys())
     return jsonify({
         "status": "active",
         "has_key": bool(key),
         "key_length": len(key),
-        "key_starts_with": key[:4] if key else None
+        "key_starts_with": key[:4] if key else None,
+        "all_env_keys": all_keys
     })
 
 if __name__ == '__main__':
