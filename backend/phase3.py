@@ -42,7 +42,14 @@ def filter_restaurants(restaurants, location, budget, cuisine=None, rating=None)
             except ValueError:
                 pass
                 
+                
         filtered.append(r)
+        
+    # If filters were too strict and nothing matched, fallback to just location
+    if not filtered:
+        for r in restaurants:
+            if location_lower in r.get('location', '').lower():
+                filtered.append(r)
         
     # Sort by rating descending
     filtered.sort(key=lambda x: x.get('rating', 0), reverse=True)
