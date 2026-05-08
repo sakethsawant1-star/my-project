@@ -47,10 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Determine Backend URL based on environment
         const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        // IMPORTANT: Update this with your actual Railway public domain URL once generated!
         const backendUrl = isLocalhost 
             ? 'http://localhost:3000/api/recommend' 
-            : 'https://zomato-ai-backend.up.railway.app/api/recommend';
+            : 'https://web-production-9d250.up.railway.app/api/recommend';
 
         fetch(backendUrl, {
             method: 'POST',
