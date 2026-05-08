@@ -27,6 +27,17 @@ def recommend():
     
     return jsonify(recommendations)
 
+@app.route('/api/debug', methods=['GET'])
+def debug_env():
+    import sys
+    key = os.environ.get("GROQ_API_KEY", "")
+    return jsonify({
+        "status": "active",
+        "has_key": bool(key),
+        "key_length": len(key),
+        "key_starts_with": key[:4] if key else None
+    })
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 3000))
     print(f"Starting server on port {port}...")
